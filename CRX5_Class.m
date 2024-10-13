@@ -1,39 +1,9 @@
-classdef RobotClass < handle
+classdef CRX5_Class < handle
 
     properties (Constant)
-%% declaring initial position of bricks
-        b_1 = [0.3 0 0]; % brick 1
-        b_2 = [0.3 0.1765 0];% brick 2
-        b_3 = [0.3 0.353 0];% brick 3
-        b_4 = [0.417 0 0];% brick 4
-        b_5 = [0.417 0.1765 0];% brick 5
-        b_6 = [0.417 0.353 0];% brick 6
-        b_7 = [0.534 0 0];% brick 7
-        b_8 = [0.534 0.1765 0];% brick 8
-        b_9 = [0.534 0.353 0];% brick 9
-%% Declaring Gripper position above brick (+0.15 in z direction)
-        b_1_Gripper_Pos = [0.3 0 0.09]; % gripper position above brick 1
-        b_2_Gripper_Pos = [0.3 0.1765 0.09]; % gripper position above brick 2
-        b_3_Gripper_Pos = [0.3 0.353 0.09]; % gripper position above brick 3
-        b_4_Gripper_Pos = [0.417 0 0.09]; % gripper position above brick 4
-        b_5_Gripper_Pos = [0.417 0.1765 0.09]; % gripper position above brick 5
-        b_6_Gripper_Pos = [0.417 0.353 0.09]; % gripper position above brick 6
-        b_7_Gripper_Pos = [0.534 0 0.09]; % gripper position above brick 7
-        b_8_Gripper_Pos = [0.534 0.1765 0.09]; % gripper position above brick 8
-        b_9_Gripper_Pos = [0.534 0.353 0.09]; % gripper position above brick 9
-%% Declaring final positions for bricks (-0.35 in x, seperated by 0.1465 in y, seperated by 0.0335 in z)  
-        b_1_Place_Pos = [-0.35 0 0.09]; % gripper position to place brick 1
-        b_2_Place_Pos = [-0.35 0.1465 0.09]; % gripper position to place brick 2
-        b_3_Place_Pos = [-0.35 0.293 0.09]; % gripper position to place brick 3
-        b_4_Place_Pos = [-0.35 0 0.1235]; % gripper position to place brick 4
-        b_5_Place_Pos = [-0.35 0.1465 0.1235]; % gripper position to place brick 5
-        b_6_Place_Pos = [-0.35 0.293 0.1235]; % gripper position to place brick 6
-        b_7_Place_Pos = [-0.35 0 0.1570]; % gripper position to place brick 7
-        b_8_Place_Pos = [-0.35 0.1465 0.1570]; % gripper position to place brick 8 
-        b_9_Place_Pos = [-0.35 0.293 0.1570]; % gripper position to place brick 9
 %% Declaring guesses for joint positions 
-        elbow_Pos_Pick = [-pi/6 pi -pi -pi/3 -pi/3 pi/2 -pi/2]; %picking up the brick
-        elbow_Pos_Place = [-pi/6 pi -pi/3 pi/2 -2*pi/3 -pi/2 pi/2]; %placing the brick
+        elbow_Pos_Pick = [ pi -pi -pi/3 -pi/3 pi/2]; %picking up the brick
+        elbow_Pos_Place = [pi -pi/3 pi/2 -2*pi/3 -pi/2]; %placing the brick
 %% Declaring gripper positions 
         Grip_open = deg2rad([25 0]);
         Grip_closed = deg2rad([11 0]);
@@ -125,47 +95,6 @@ classdef RobotClass < handle
                 num = num + 1;
             end
         end
-%% Function to plot and calculate the volume based on tutorial 3 for spray gun 
-        function [Volume_Plot] = Plot_Volume(self)
-            stepRads = deg2rad(60);
-            stepmeter = 0.2;
-            qlim = self.model.qlim;
-            X_axis = [4 13 4 6 13 13];
-            pointCloudeSize = prod(X_axis);
-            pointCloud = zeros(pointCloudeSize,3);
-            counter = 1;
-            for q1 = qlim(1,1):stepmeter:qlim(1,2)
-                for q2 = qlim(2,1):stepRads:qlim(2,2)
-                    for q3 = qlim(3,1):stepRads:qlim(3,2)
-                        for q4 = qlim(4,1):stepRads:qlim(4,2)
-                            for q5 = qlim(5,1):stepRads:qlim(5,2)
-                                for q6 = qlim(6,1):stepRads:qlim(6,2)
-                                    q7 = 0;
-                                    q = [q1,q2,q3,q4,q5,q6,q7];
-                                    tr = self.model.fkineUTS(q);
-                                    pointCloud(counter,:) = tr(1:3,4)';
-                                    counter = counter + 1;
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        %Plot the volume of the robot arm based on the Qlim defined
-            hold on;
-            figure(1);
-            Volume_Plot = plot3(pointCloud(:,1),pointCloud(:,2),pointCloud(:,3),'o','Color','r');
-            drawnow();
-            hold on;
-        % Calculate the max spread for each axis
-            X_axis = (max(pointCloud(:,1)) - min(pointCloud(:,1)))/2;
-            Y_axis = (max(pointCloud(:,2)) - min(pointCloud(:,2)))/2;
-            Z_axis = (max(pointCloud(:,3)) - min(pointCloud(:,3)))/2;
-        % Calculate its volume  based on it beaing an elipsoid
-            volume = (4/3)*pi*X_axis*Y_axis*Z_axis;
-            disp(strcat("Approximate volume (m^3) = ",num2str(volume)));
-        end
-
 %% Function to plot the environment and its safety features
         function Plot_Environment()
             fig = figure(1); % Ensure figure 1 is used
@@ -212,26 +141,7 @@ classdef RobotClass < handle
             PlaceObject('Table.ply',[1,2.5,0]);
             PlaceObject('emergencyStopButton.ply',[1,2.3,0.55]);
         end
-
-%% Function to plot the bricks
-        function [b1, b2, b3, b4, b5, b6, b7, b8, b9] = Plot_Brick()
-        % placing bricks 1:9
-            b1 = PlaceObject('HalfSizedRedGreenBrick.ply' ,RobotClass.b_1); 
-            b2 = PlaceObject('HalfSizedRedGreenBrick.ply' ,RobotClass.b_2);
-            b3 = PlaceObject('HalfSizedRedGreenBrick.ply' ,RobotClass.b_3);
-            b4 = PlaceObject('HalfSizedRedGreenBrick.ply' ,RobotClass.b_4);
-            b5 = PlaceObject('HalfSizedRedGreenBrick.ply' ,RobotClass.b_5);
-            b6 = PlaceObject('HalfSizedRedGreenBrick.ply' ,RobotClass.b_6);
-            b7 = PlaceObject('HalfSizedRedGreenBrick.ply' ,RobotClass.b_7);
-            b8 = PlaceObject('HalfSizedRedGreenBrick.ply' ,RobotClass.b_8);
-            b9 = PlaceObject('HalfSizedRedGreenBrick.ply' ,RobotClass.b_9);
-        end
-%% function to delete each brick safely through a catch function 
-        function Delete_Brick(brick)
-            try delete(brick);
-            catch ME
-            end
-        end
  
     end
 end
+
