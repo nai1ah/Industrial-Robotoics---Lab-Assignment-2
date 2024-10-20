@@ -13,7 +13,7 @@ Bottombun_pos = [0.25,-0.42,0.55];
 Cheese_pos = [0.25,-0.3,0.55];
 Patty_pos = [0.25,-0.15,0.55];
 tomato_pos = [-0.25,-0.42,0.55];
-lettuce_pos = [-0.25,-0.3,0.55];
+lettuce_pos = [-0.25,-0.3,0.56];
 Topbun_pos = [-0.25,-0.15,0.55];
 
     end
@@ -173,6 +173,9 @@ Topbun_pos = [-0.25,-0.15,0.55];
             PlaceObject('lettuce.ply',CRX5_Class.lettuce_pos);
             PlaceObject('topbun.ply',CRX5_Class.Topbun_pos);
             hold on;
+            %Plot the surrounding wall
+            surf([-2,-2;-2,-2],[-2,-2;4,4],[0.01,4;0.01,4],'CData',imread('Environment.jpg'),'FaceColor','texturemap');
+            surf([-2,-2;2,2],[4,4;4,4],[0.01,4;0.01,4],'CData',imread('Environment.jpg'),'FaceColor','texturemap');
         end
  
     end
