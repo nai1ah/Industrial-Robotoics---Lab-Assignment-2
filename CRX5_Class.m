@@ -2,11 +2,11 @@ classdef CRX5_Class < handle
 
     properties (Constant)
 %% Declaring guesses for joint positions 
-        elbow_Pos_Plate_Pick = [ 1.1868    0.5585   -1.6755   -0.4887    0.4189]; %picking up the plate
+        elbow_Pos_Plate_Pick = [ 1.2566    0.6912   -1.2566   -2.5761         0]; %picking up the plate
         elbow_Pos_plate_Place = [   -0.9076    0.5585   -1.6755   -0.4887    0.4189]; %placing the plate
 %% Declaring gripper positions 
         Grip_open = deg2rad([25 0]);
-        Grip_closed = deg2rad([11 0]);
+        Grip_closed = deg2rad([-10 0]);
 %% Declaring positions for items
 Plate_pos = [0,1.4,0.55];
 Bottombun_pos = [0.25,-0.42,0.55];
@@ -16,6 +16,15 @@ tomato_pos = [-0.25,-0.42,0.55];
 lettuce_pos = [-0.25,-0.3,0.56];
 Topbun_pos = [-0.25,-0.15,0.55];
 
+%% Declaring positions for items
+Plate_pos_pick = [0,1.34,0.65];
+% Bottombun_pos = [0.25,-0.42,0.55];
+% Cheese_pos = [0.25,-0.3,0.55];
+% Patty_pos = [0.25,-0.15,0.55];
+% tomato_pos = [-0.25,-0.42,0.55];
+% lettuce_pos = [-0.25,-0.3,0.56];
+% Topbun_pos = [-0.25,-0.15,0.55];
+
     end
 
     methods (Static) 
@@ -23,7 +32,7 @@ Topbun_pos = [-0.25,-0.15,0.55];
         function qtrajec = Create_Trajectory(robot,brickPosition,jointGuess)
             steps = 100;
             qNow = robot.model.getpos();
-            T = transl(brickPosition)*trotx(pi)*troty(0)*trotz(0);    
+            T = transl(brickPosition)*trotx(pi)*troty(0)*trotz(pi/2);    
             qMove = wrapToPi(robot.model.ikcon(T,jointGuess));
             qtrajec = jtraj(qNow,qMove,steps);
         end
@@ -174,7 +183,7 @@ Topbun_pos = [-0.25,-0.15,0.55];
             PlaceObject('topbun.ply',CRX5_Class.Topbun_pos);
             hold on;
             %Plot the surrounding wall
-            surf([-2,-2;-2,-2],[-2,-2;4,4],[0.01,4;0.01,4],'CData',imread('Environment.jpg'),'FaceColor','texturemap');
+            surf([2,2;2,2],[-2,-2;4,4],[0.01,4;0.01,4],'CData',imread('Environment.jpg'),'FaceColor','texturemap');
             surf([-2,-2;2,2],[4,4;4,4],[0.01,4;0.01,4],'CData',imread('Environment.jpg'),'FaceColor','texturemap');
         end
  

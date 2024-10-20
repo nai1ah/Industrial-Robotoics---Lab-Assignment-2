@@ -42,6 +42,7 @@ dobot_finger1 = LinearFinger(base_2*trotx(pi/2));
 dobot_finger2 = LinearFinger(base_2*troty(pi)*trotx(-pi/2));
 
 %% Move CRX to plate 
-CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,RobotClass.Grip_closed);
-qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos,CRX5_Class.elbow_Pos_Plate_Pick);
+CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_open);
+qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos_pick,CRX5_Class.elbow_Pos_Plate_Pick);
 CRX5_Class.Move_crx(r1,qTraj,crx_finger1,crx_finger2);
+CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_closed);
