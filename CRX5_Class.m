@@ -2,13 +2,15 @@ classdef CRX5_Class < handle
 
     properties (Constant)
 %% Declaring guesses for joint positions 
-        elbow_Pos_Plate_Pick = [ 1.2566    0.6912   -1.2566   -2.5761         0]; %picking up the plate
-        elbow_Pos_plate_Place = [   -0.9076    0.5585   -1.6755   -0.4887    0.4189]; %placing the plate
+elbow_Pos_Rest = [-0.0628 0.9425 -1.5708 -2.4504 0] % elbow guess for rest position      
+elbow_Pos_Plate_Pick = [1.2566 0.6912 -1.2566 -2.5761 0]; %picking up the plate
+elbow_Pos_plate_Place = [-0.8796 0.6283 -1.1310 -2.6389 0]; %placing the plate
 %% Declaring gripper positions 
-        Grip_open = deg2rad([25 0]);
-        Grip_closed = deg2rad([-10 0]);
+Grip_open = deg2rad([25 0]);
+Grip_closed = deg2rad([-10 0]);
 %% Declaring positions for items
 Plate_pos = [0,1.4,0.55];
+Plate_pos_build = [0,0.1,0.55];
 Bottombun_pos = [0.25,-0.42,0.55];
 Cheese_pos = [0.25,-0.3,0.55];
 Patty_pos = [0.25,-0.15,0.55];
@@ -18,6 +20,8 @@ Topbun_pos = [-0.25,-0.15,0.55];
 
 %% Declaring positions for items
 Plate_pos_pick = [0,1.34,0.65];
+Plate_pos_place = [0,0.16,0.65];
+CRX_rest = [0, 0.4,0.7]
 % Bottombun_pos = [0.25,-0.42,0.55];
 % Cheese_pos = [0.25,-0.3,0.55];
 % Patty_pos = [0.25,-0.15,0.55];
@@ -29,10 +33,10 @@ Plate_pos_pick = [0,1.34,0.65];
 
     methods (Static) 
 %% Function to generate a set of q values based on  jtraj - quintic polynomial
-        function qtrajec = Create_Trajectory(robot,brickPosition,jointGuess)
+        function qtrajec = Create_Trajectory(robot,Position,jointGuess)
             steps = 100;
             qNow = robot.model.getpos();
-            T = transl(brickPosition)*trotx(pi)*troty(0)*trotz(pi/2);    
+            T = transl(Position)*trotx(pi)*troty(0)*trotz(pi/2);    
             qMove = wrapToPi(robot.model.ikcon(T,jointGuess));
             qtrajec = jtraj(qNow,qMove,steps);
         end
@@ -72,25 +76,20 @@ Plate_pos_pick = [0,1.34,0.65];
             
         end
 %% Function to move the arm, gripper and grabbed brick to the desired position 
-        function Move_Brick(self,qArray,finger1, finger2,bricknum)
-        %Create a log file using the log4matlab tool from matlab 
-            logFileName = strcat('logLinearUR3',self.model.name,'.log');
-            L = log4matlab(logFileName);
-            disp(strcat("Logging on file: ",logFileName));
-            num = 1;
+        function Move_Plate(self,qArray,finger1, finger2,plate)
         %Read the ply file in faces, vertices, and color it
-            [f,v,data] = plyread('HalfSizedRedGreenBrick.ply','tri');
+            [f,v,data] = plyread('plate.ply');%,'tri'
             vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
-            BrickVertexCount = size(v,1);
-            BrickMesh_h = trisurf(f,v(:,1)+bricknum(1,1),v(:,2)+bricknum(1,2), v(:,3)+bricknum(1,3) ...
+            plateVertexCount = size(v,1);
+            PlateMesh_h = trisurf(f,v(:,1)+plate(1,1),v(:,2)+plate(1,2), v(:,3)+plate(1,3) ...
                 ,'FaceVertexCData',vertexColours,'EdgeColor','none','EdgeLighting','none');
-        % for loop to move the brick, arm and gripper all together 
+        % for loop to move the plate, arm and gripper all together 
             for i=1:size(qArray,1)
-        % Moving brick along with the gripper and arm
-                brick = self.model.fkineUTS(qArray(i,:));
-                BrickPose = brick*transl(0,0,0.05) ; %% translate the position of the brick to move with gripper
-                UpdatedPoints = (BrickPose * [v,ones(BrickVertexCount,1)]')'; % updated position of brick and apply to each vertex 
-                BrickMesh_h.Vertices = UpdatedPoints(:,1:3);%The vertices are columns 1 to 3 and all rows of UpdatedPoints
+        % Moving plate along with the gripper and arm
+                plate = self.model.fkineUTS(qArray(i,:));
+                Plate_Pose = plate*transl(0,-0.06,0.05) ; %% translate the position of the brick to move with gripper
+                UpdatedPoints = (Plate_Pose * [v,ones(plateVertexCount,1)]')'; % updated position of brick and apply to each vertex 
+                PlateMesh_h.Vertices = UpdatedPoints(:,1:3);%The vertices are columns 1 to 3 and all rows of UpdatedPoints
         % Move the robot arm through the trajectory      
                 self.model.animate(qArray(i,:));  
         % Move the gripper along with the arm by updating the base and
@@ -102,15 +101,6 @@ Plate_pos_pick = [0,1.34,0.65];
                 finger2.model.base = base * troty(pi) * trotx(-pi/2);
                 finger2.model.animate(q_f2);
                 pause(0.0005);
-        %Display the current position of the end-effector every 'freq' times
-                freq = 5;
-                if mod(num,freq) == 0
-                    currPosition = transl(self.model.fkine(qArray(i,:)).T)'; % using fkine to determine current ee pos
-                    message = strcat('DEBUG: ',' Current position = ',num2str(currPosition));
-                    L.mlog = {L.DEBUG,'LinearUR3',message};
-                    disp(message);
-                end
-                num = num + 1;
             end
         end
 %% Function to plot the environment and its safety features
@@ -174,17 +164,28 @@ Plate_pos_pick = [0,1.34,0.65];
             PlaceObject('Table.ply',[-0.4,1.23,0]);
             PlaceObject('Table.ply',[0.4,1.23,0]);
             PlaceObject('emergencyStopButton.ply',[1,3,0.55]);
-            PlaceObject('plate.ply',CRX5_Class.Plate_pos);
-            PlaceObject('bottombun.ply',CRX5_Class.Bottombun_pos);
-            PlaceObject('cheese.ply',CRX5_Class.Cheese_pos);
-            PlaceObject('patty.ply',CRX5_Class.Patty_pos);
-            PlaceObject('tomato.ply',CRX5_Class.tomato_pos);
-            PlaceObject('lettuce.ply',CRX5_Class.lettuce_pos);
-            PlaceObject('topbun.ply',CRX5_Class.Topbun_pos);
+            
             hold on;
             %Plot the surrounding wall
             surf([2,2;2,2],[-2,-2;4,4],[0.01,4;0.01,4],'CData',imread('Environment.jpg'),'FaceColor','texturemap');
             surf([-2,-2;2,2],[4,4;4,4],[0.01,4;0.01,4],'CData',imread('Environment.jpg'),'FaceColor','texturemap');
+        end
+
+        %% function for creating burger parts 
+        function [Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce, Top_Bun] = Deconstructed_Burger() 
+            Plate = PlaceObject('plate.ply',CRX5_Class.Plate_pos);
+            Bottom_Bun = PlaceObject('bottombun.ply',CRX5_Class.Bottombun_pos);
+            Cheese = PlaceObject('cheese.ply',CRX5_Class.Cheese_pos);
+            Patty = PlaceObject('patty.ply',CRX5_Class.Patty_pos);
+            Tomato = PlaceObject('tomato.ply',CRX5_Class.tomato_pos);
+            Lettuce = PlaceObject('lettuce.ply',CRX5_Class.lettuce_pos);
+            Top_Bun = PlaceObject('topbun.ply',CRX5_Class.Topbun_pos);
+        end
+        %% function to delete each brick safely through a catch function 
+        function Delete_Object(object)
+            try delete(object);
+            catch ME
+            end
         end
  
     end

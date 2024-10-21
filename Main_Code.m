@@ -6,6 +6,7 @@ clc;
 %% Plot the environment
 CRX5_Class.Plot_Environment()
 axis manual;
+[Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce, Top_Bun] = CRX5_Class.Deconstructed_Burger();
 hold on
 
 %% Plot the CRX5 and the gripper
@@ -46,3 +47,43 @@ CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_open);
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos_pick,CRX5_Class.elbow_Pos_Plate_Pick);
 CRX5_Class.Move_crx(r1,qTraj,crx_finger1,crx_finger2);
 CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_closed);
+
+%% Move plate to dobot 
+qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos_place,CRX5_Class.elbow_Pos_plate_Place);
+CRX5_Class.Delete_Object(Plate);
+CRX5_Class.Move_Plate(r1, qTraj, crx_finger1,crx_finger2,CRX5_Class.Plate_pos);
+%% Move crx to rest position
+CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_open);
+qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.CRX_rest,CRX5_Class.elbow_Pos_Rest);
+CRX5_Class.Move_crx(r1,qTraj,crx_finger1,crx_finger2);
+
+%% Place bottom bun on plate 
+
+
+%% Place Cheese on bun 
+
+
+%% Place patty on bun 
+
+
+%% Place tomato on bun 
+
+
+%% Place lettuce on bun 
+
+
+%% Place top bun on burger
+
+
+%% Move crx back to plate 
+qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos_place,CRX5_Class.elbow_Pos_plate_Place);
+CRX5_Class.Move_crx(r1, qTraj, crx_finger1,crx_finger2);
+CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_closed);
+
+%% Move plate with burger back to start 
+qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos_pick,CRX5_Class.elbow_Pos_Plate_Pick);
+CRX5_Class.Delete_Object(Plate); 
+CRX5_Class.Move_Plate(r1, qTraj, crx_finger1,crx_finger2,CRX5_Class.Plate_pos_place);
+CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_open);
+qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.CRX_rest,CRX5_Class.elbow_Pos_Rest);
+CRX5_Class.Move_crx(r1,qTraj,crx_finger1,crx_finger2);
