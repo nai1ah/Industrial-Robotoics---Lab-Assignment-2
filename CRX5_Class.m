@@ -5,19 +5,29 @@ classdef CRX5_Class < handle
 elbow_Pos_Rest = [-0.0628 0.9425 -1.5708 -2.4504 0] % elbow guess for rest position      
 elbow_Pos_Plate_Pick = [1.2566 0.6912 -1.2566 -2.5761 0]; %picking up the plate
 elbow_Pos_plate_Place = [-0.8796 0.6283 -1.1310 -2.6389 0]; %placing the plate
-
 %% Declaring gripper positions 
 Grip_open = deg2rad([25 0]);
 Grip_closed = deg2rad([-5 0]);
-
 %% Declaring positions for items
 Plate_pos = [0,1.4,0.55];
 Plate_pos_build = [0,0.1,0.55];
+Bottombun_pos = [0.25,-0.42,0.55];
+Cheese_pos = [0.25,-0.3,0.55];
+Patty_pos = [0.25,-0.15,0.55];
+tomato_pos = [-0.25,-0.42,0.55];
+lettuce_pos = [-0.25,-0.3,0.56];
+Topbun_pos = [-0.25,-0.15,0.55];
 
 %% Declaring positions for items
 Plate_pos_pick = [0,1.34,0.65];
-Plate_pos_place = [0,0.1,0.6];
-CRX_rest = [0, 0.4,0.7];
+Plate_pos_place = [0,0.16,0.65];
+CRX_rest = [0, 0.4,0.7]
+% Bottombun_pos = [0.25,-0.42,0.55];
+% Cheese_pos = [0.25,-0.3,0.55];
+% Patty_pos = [0.25,-0.15,0.55];
+% tomato_pos = [-0.25,-0.42,0.55];
+% lettuce_pos = [-0.25,-0.3,0.56];
+% Topbun_pos = [-0.25,-0.15,0.55];
 
     end
 
@@ -77,7 +87,7 @@ CRX_rest = [0, 0.4,0.7];
             for i=1:size(qArray,1)
         % Moving plate along with the gripper and arm
                 plate = self.model.fkineUTS(qArray(i,:));
-                Plate_Pose = plate*transl(0,0,0.05)*trotx(pi)*troty(0)*trotz(pi/2); %% translate the position of the brick to move with gripper
+                Plate_Pose = plate*transl(0,-0.06,0.05)*trotx(pi)*troty(0)*trotz(pi/2); %% translate the position of the brick to move with gripper
                 UpdatedPoints = (Plate_Pose * [v,ones(plateVertexCount,1)]')'; % updated position of brick and apply to each vertex 
                 PlateMesh_h.Vertices = UpdatedPoints(:,1:3);%The vertices are columns 1 to 3 and all rows of UpdatedPoints
         % Move the robot arm through the trajectory      
@@ -93,102 +103,7 @@ CRX_rest = [0, 0.4,0.7];
                 pause(0.0005);
             end
         end
-%% Function to move the arm, gripper and grabbed brick to the desired position 
-function Move_Burger(self,qArray,finger1, finger2,plate,Bottom_bun,cheese,patty,tomato,lettuce,top_bun)
-        %Read the ply file in faces, vertices, and color it
-            [f,v,data] = plyread('plate.ply','tri');%
-            vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
-            plateVertexCount = size(v,1);
-            PlateMesh_h = trisurf(f,v(:,1)+plate(1,1),v(:,2)+plate(1,2), v(:,3)+plate(1,3) ...
-                ,'FaceVertexCData',vertexColours,'EdgeColor','none','EdgeLighting','none');
-        % Read ply file for bottom bun 
-            [f1,v1,data1] = plyread('bottombun.ply','tri');%
-            vertexColours1 = [data1.vertex.red, data1.vertex.green, data1.vertex.blue] / 255;
-            Bottom_Bun_VertexCount = size(v1,1);
-            Bottom_Bun_Mesh_h = trisurf(f1,v1(:,1)+Bottom_bun(1,1),v1(:,2)+Bottom_bun(1,2), v1(:,3)+Bottom_bun(1,3) ...
-                ,'FaceVertexCData',vertexColours1,'EdgeColor','none','EdgeLighting','none');
-        %Read the ply file for cheese 
-            [f2,v2,data2] = plyread('cheese.ply','tri');%
-            cheese_Colours = [data2.vertex.red, data2.vertex.green, data2.vertex.blue] / 255;
-            Cheese_VertexCount = size(v2,1);
-            Cheese_Mesh_h = trisurf(f2,v2(:,1)+cheese(1,1),v2(:,2)+cheese(1,2), v2(:,3)+cheese(1,3) ...
-                ,'FaceVertexCData',cheese_Colours,'EdgeColor','none','EdgeLighting','none');
-         %Read the ply file for patty
-            [f3,v3,data3] = plyread('patty.ply','tri');%
-            patty_Colours = [data3.vertex.red, data3.vertex.green, data3.vertex.blue] / 255;
-            patty_VertexCount = size(v3,1);
-            patty_Mesh_h = trisurf(f3,v3(:,1)+patty(1,1),v3(:,2)+patty(1,2), v3(:,3)+patty(1,3) ...
-                ,'FaceVertexCData',patty_Colours,'EdgeColor','none','EdgeLighting','none');
-        %Read the ply file for tomato
-            [f4,v4,data4] = plyread('tomato.ply','tri');%
-            Tomato_vertexColours = [data4.vertex.red, data4.vertex.green, data4.vertex.blue] / 255;
-            Tomato_VertexCount = size(v4,1);
-            Tomato_Mesh_h = trisurf(f4,v4(:,1)+tomato(1,1),v4(:,2)+tomato(1,2), v4(:,3)+tomato(1,3) ...
-                ,'FaceVertexCData',Tomato_vertexColours,'EdgeColor','none','EdgeLighting','none');
-        %Read the ply file for lettuce
-            [f5,v5,data5] = plyread('lettuce.ply','tri');%
-            Lettuce_vertexColours = [data5.vertex.red, data5.vertex.green, data5.vertex.blue] / 255;
-            Lettuce_VertexCount = size(v5,1);
-            Lettuce_Mesh_h = trisurf(f5,v5(:,1)+lettuce(1,1),v5(:,2)+lettuce(1,2), v5(:,3)+lettuce(1,3) ...
-                ,'FaceVertexCData',Lettuce_vertexColours,'EdgeColor','none','EdgeLighting','none');
-        %Read the ply file for top bun
-            [f6,v6,data6] = plyread('topbun.ply','tri');%
-            TopBun_vertexColours = [data6.vertex.red, data6.vertex.green, data6.vertex.blue] / 255;
-            TopBun_VertexCount = size(v6,1);
-            TopBun_Mesh_h = trisurf(f6,v6(:,1)+top_bun(1,1),v6(:,2)+top_bun(1,2), v6(:,3)+top_bun(1,3) ...
-                ,'FaceVertexCData',TopBun_vertexColours,'EdgeColor','none','EdgeLighting','none');
 
-        % for loop to move the plate, arm and gripper all together 
-            for i=1:size(qArray,1)
-        % Moving plate along with the gripper and arm
-                plate = self.model.fkineUTS(qArray(i,:));
-                Plate_Pose = plate*transl(0,0,0.1)*trotx(pi)*troty(0)*trotz(pi/2); %% translate the position of the brick to move with gripper
-                UpdatedPoints = (Plate_Pose * [v,ones(plateVertexCount,1)]')'; % updated position of brick and apply to each vertex 
-                PlateMesh_h.Vertices = UpdatedPoints(:,1:3);%The vertices are columns 1 to 3 and all rows of UpdatedPoints
-        % Moving Bottom bun along with the gripper and arm
-                Bottom_bun = self.model.fkineUTS(qArray(i,:));
-                Bottom_bun_Pose = Bottom_bun*transl(0,0,0.09)*trotx(pi)*troty(0)*trotz(pi/2); %% translate the position of the brick to move with gripper
-                UpdatedPoints1 = (Bottom_bun_Pose * [v1,ones(Bottom_Bun_VertexCount,1)]')'; % updated position of brick and apply to each vertex 
-                Bottom_Bun_Mesh_h.Vertices = UpdatedPoints1(:,1:3);
-        % Moving cheese along with the gripper and arm
-                cheese = self.model.fkineUTS(qArray(i,:));
-                cheese_Pose = cheese*transl(0,0,0.07)*trotx(pi)*troty(0)*trotz(pi/2); %% translate the position of the brick to move with gripper
-                UpdatedPoints2 = (cheese_Pose * [v2,ones(Cheese_VertexCount,1)]')'; % updated position of brick and apply to each vertex 
-                Cheese_Mesh_h.Vertices = UpdatedPoints2(:,1:3);
-        % Moving patty along with the gripper and arm
-                patty = self.model.fkineUTS(qArray(i,:));
-                Patty_Pose = patty*transl(0,0,0.065)*trotx(pi)*troty(0)*trotz(pi/2); %% translate the position of the brick to move with gripper
-                UpdatedPoints3 = (Patty_Pose * [v3,ones(patty_VertexCount,1)]')'; % updated position of brick and apply to each vertex 
-                patty_Mesh_h.Vertices = UpdatedPoints3(:,1:3);
-        % Moving tomato along with the gripper and arm
-                tomato = self.model.fkineUTS(qArray(i,:));
-                Tomato_Pose = tomato*transl(0,0,0.045)*trotx(pi)*troty(0)*trotz(pi/2); %% translate the position of the brick to move with gripper
-                UpdatedPoints4 = (Tomato_Pose * [v4,ones(Tomato_VertexCount,1)]')'; % updated position of brick and apply to each vertex 
-                Tomato_Mesh_h.Vertices = UpdatedPoints4(:,1:3);%
-        % Moving lettuce along with the gripper and arm
-                lettuce = self.model.fkineUTS(qArray(i,:));
-                Lettuce_Pose = lettuce*transl(0,0,0.035)*trotx(pi)*troty(0)*trotz(pi/2); %% translate the position of the brick to move with gripper
-                UpdatedPoints5 = (Lettuce_Pose * [v5,ones(Lettuce_VertexCount,1)]')'; % updated position of brick and apply to each vertex 
-                Lettuce_Mesh_h.Vertices = UpdatedPoints5(:,1:3);
-        % Moving top bun along with the gripper and arm
-                top_bun = self.model.fkineUTS(qArray(i,:));
-                TopBun_Pose = top_bun*transl(0,0,0.029)*trotx(pi)*troty(0)*trotz(pi/2); %% translate the position of the brick to move with gripper
-                UpdatedPoints6 = (TopBun_Pose * [v6,ones(TopBun_VertexCount,1)]')'; % updated position of brick and apply to each vertex 
-                TopBun_Mesh_h.Vertices = UpdatedPoints6(:,1:3);
-
-        % Move the robot arm through the trajectory      
-                self.model.animate(qArray(i,:));  
-        % Move the gripper along with the arm by updating the base and
-                base = self.model.fkineUTS(qArray(i,:));
-                q_f1 = finger1.model.getpos();
-                q_f2 = finger2.model.getpos();
-                finger1.model.base = base * trotx(pi/2);
-                finger1.model.animate(q_f1);
-                finger2.model.base = base * troty(pi) * trotx(-pi/2);
-                finger2.model.animate(q_f2);
-                pause(0.0005);
-            end
-        end
     end
 end
 

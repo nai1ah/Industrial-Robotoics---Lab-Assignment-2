@@ -56,18 +56,18 @@ Topbun_pos_place = [0,0.1,0.72];
             end
         end
         %% Function to move the arm, gripper and grabbed brick to the desired position 
-        function Move_Bottom_bun(self,qArray,Bottom_bun)
+function Move_Bottom_bun(self,qArray,plate)
         %Read the ply file in faces, vertices, and color it
             [f,v,data] = plyread('bottombun.ply','tri');%
             vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
             plateVertexCount = size(v,1);
-            PlateMesh_h = trisurf(f,v(:,1)+Bottom_bun(1,1),v(:,2)+Bottom_bun(1,2), v(:,3)+Bottom_bun(1,3) ...
+            PlateMesh_h = trisurf(f,v(:,1)+plate(1,1),v(:,2)+plate(1,2), v(:,3)+plate(1,3) ...
                 ,'FaceVertexCData',vertexColours,'EdgeColor','none','EdgeLighting','none');
         % for loop to move the plate, arm and gripper all together 
             for i=1:size(qArray,1)
         % Moving plate along with the gripper and arm
-                Bottom_bun = self.model.fkineUTS(qArray(i,:));
-                Plate_Pose = Bottom_bun*transl(0,0,-0.07) ; %% translate the position of the brick to move with gripper
+                plate = self.model.fkineUTS(qArray(i,:));
+                Plate_Pose = plate*transl(0,0,0.05) ; %% translate the position of the brick to move with gripper
                 UpdatedPoints = (Plate_Pose * [v,ones(plateVertexCount,1)]')'; % updated position of brick and apply to each vertex 
                 PlateMesh_h.Vertices = UpdatedPoints(:,1:3);%The vertices are columns 1 to 3 and all rows of UpdatedPoints
         % Move the robot arm through the trajectory      

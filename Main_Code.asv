@@ -42,10 +42,7 @@ base_2 = r2.model.fkineUTS(q_2_Now);
 % dobot_finger1 = LinearFinger(base_2*trotx(pi/2)); 
 % dobot_finger2 = LinearFinger(base_2*troty(pi)*trotx(-pi/2));
 
-%% Move the dobot out of the way 
-qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Bottombun_pos_pick,Dobot_Class.elbow_Pos_RHS);
-Dobot_Class.Move_Dobot(r2,qTraj);
-
+%% 
 %% Move CRX to plate 
 CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_open);
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos_pick,CRX5_Class.elbow_Pos_Plate_Pick);
@@ -67,10 +64,8 @@ Robot_Base_Class.Delete_Object(Bottom_Bun);
 Dobot_Class.Move_Bottom_bun(r2,qTraj,Dobot_Class.Bottombun_pos)
 
 %% Place Cheese on bun 
-qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Cheese_pos_pick,Dobot_Class.elbow_Pos_RHS);
-Dobot_Class.Move_Dobot(r2,qTraj);
-% qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Cheese_pos_place,Dobot_Class.elbow_Pos_Place);
-% Robot_Base_Class.Delete_Object(Cheese);
+
+
 %% Place patty on bun 
 
 
