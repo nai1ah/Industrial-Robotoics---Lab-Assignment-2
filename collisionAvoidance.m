@@ -58,7 +58,7 @@ function qAvoid = getRandomWaypoint(qlim)
 end
 
 %% FineInterpolation
-% Use results from Q2.6 to keep calling jtraj until all step sizes are
+% Keep calling jtraj until all step sizes are
 % smaller than a given max steps size
 function qMatrix = FineInterpolation(q1,q2,maxStepRadians)
     if nargin < 3
