@@ -7,25 +7,9 @@ Plate_pos_build = [0,0.1,0.55];
 Bottombun_pos = [0.25,-0.42,0.55];
 Cheese_pos = [0.25,-0.3,0.55];
 Patty_pos = [0.25,-0.15,0.55];
-tomato_pos = [-0.25,-0.42,0.55];
-lettuce_pos = [-0.25,-0.3,0.56];
+Tomato_pos = [-0.25,-0.42,0.55];
+Lettuce_pos = [-0.25,-0.3,0.56];
 Topbun_pos = [-0.25,-0.15,0.55];
-
-%% Declaring positions for grabbing burger parts 
-Bottombun_pos_pick = [0.25,-0.42,0.65];
-Cheese_pos_pick = [0.25,-0.3,0.65];
-Patty_pos_pick = [0.25,-0.15,0.65];
-tomato_pos_pick = [-0.25,-0.42,0.65];
-lettuce_pos_pick = [-0.25,-0.3,0.66];
-Topbun_pos_pick = [-0.25,-0.15,0.65];
-
-%% Declaring positions for placing burger parts 
-Bottombun_pos_place = [0,0.1,0.65];
-Cheese_pos_place = [0,0.1,0.67];
-Patty_pos_place = [0,0.1,0.68];
-tomato_pos_place = [0,0.1,0.70];
-lettuce_pos_place = [0,0.1,0.71];
-Topbun_pos_place = [0,0.1,0.72];
 
     end
 
@@ -119,13 +103,13 @@ Topbun_pos_place = [0,0.1,0.72];
 
         %% function for creating burger parts 
         function [Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce, Top_Bun] = Deconstructed_Burger() 
-            Plate = PlaceObject('plate.ply',CRX5_Class.Plate_pos);
-            Bottom_Bun = PlaceObject('bottombun.ply',CRX5_Class.Bottombun_pos);
-            Cheese = PlaceObject('cheese.ply',CRX5_Class.Cheese_pos);
-            Patty = PlaceObject('patty.ply',CRX5_Class.Patty_pos);
-            Tomato = PlaceObject('tomato.ply',CRX5_Class.tomato_pos);
-            Lettuce = PlaceObject('lettuce.ply',CRX5_Class.lettuce_pos);
-            Top_Bun = PlaceObject('topbun.ply',CRX5_Class.Topbun_pos);
+            Plate = PlaceObject('plate.ply',Robot_Base_Class.Plate_pos);
+            Bottom_Bun = PlaceObject('bottombun.ply',Robot_Base_Class.Bottombun_pos);
+            Cheese = PlaceObject('cheese.ply',Robot_Base_Class.Cheese_pos);
+            Patty = PlaceObject('patty.ply',Robot_Base_Class.Patty_pos);
+            Tomato = PlaceObject('tomato.ply',Robot_Base_Class.Tomato_pos);
+            Lettuce = PlaceObject('lettuce.ply',Robot_Base_Class.Lettuce_pos);
+            Top_Bun = PlaceObject('topbun.ply',Robot_Base_Class.Topbun_pos);
         end
         %% function to delete each brick safely through a catch function 
         function Delete_Object(object)
