@@ -9,6 +9,19 @@ axis manual;
 [Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce, Top_Bun] = Robot_Base_Class.Deconstructed_Burger();
 hold on
 
+%% Pin definitions
+buttonStopPin = 'D2';  % E-stop button pin
+buttonResumePin = 'D3'; % Resume button pin
+
+%% Initialize Arduino
+a = arduino('COM3','Uno');  % Connect to Arduino
+configurePin(a, buttonStopPin, 'Pullup');
+configurePin(a, buttonResumePin, 'Pullup');
+
+%% Create E-Stop Object
+eStop = EStopUI(a, buttonStopPin, buttonResumePin);
+eStop.createUI();
+
 %% Plot the CRX5 and the gripper
 % Call the LinearUR3e
 r1 = crx5;
