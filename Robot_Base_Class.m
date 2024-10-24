@@ -119,13 +119,13 @@ Topbun_pos_place = [0,0.1,0.72];
 
         %% function for creating burger parts 
         function [Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce, Top_Bun] = Deconstructed_Burger() 
-            Plate = PlaceObject('plate.ply',CRX5_Class.Plate_pos);
-            Bottom_Bun = PlaceObject('bottombun.ply',CRX5_Class.Bottombun_pos);
-            Cheese = PlaceObject('cheese.ply',CRX5_Class.Cheese_pos);
-            Patty = PlaceObject('patty.ply',CRX5_Class.Patty_pos);
-            Tomato = PlaceObject('tomato.ply',CRX5_Class.tomato_pos);
-            Lettuce = PlaceObject('lettuce.ply',CRX5_Class.lettuce_pos);
-            Top_Bun = PlaceObject('topbun.ply',CRX5_Class.Topbun_pos);
+            Plate = PlaceObject('plate.ply',Robot_Base_Class.Plate_pos);
+            Bottom_Bun = PlaceObject('bottombun.ply',Robot_Base_Class.Bottombun_pos);
+            Cheese = PlaceObject('cheese.ply',Robot_Base_Class.Cheese_pos);
+            Patty = PlaceObject('patty.ply',Robot_Base_Class.Patty_pos);
+            Tomato = PlaceObject('tomato.ply',Robot_Base_Class.tomato_pos);
+            Lettuce = PlaceObject('lettuce.ply',Robot_Base_Class.lettuce_pos);
+            Top_Bun = PlaceObject('topbun.ply',Robot_Base_Class.Topbun_pos);
         end
         %% function to delete each brick safely through a catch function 
         function Delete_Object(object)
