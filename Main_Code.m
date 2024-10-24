@@ -21,6 +21,7 @@ configurePin(a, buttonResumePin, 'Pullup');
 %% Create E-Stop Object
 eStop = EStopUI(a, buttonStopPin, buttonResumePin);
 eStop.createUI();
+% to add robots to the eStop, use eStop.addRobot()
 
 %% Plot the CRX5 and the gripper
 % Call the LinearUR3e
