@@ -2,8 +2,8 @@ classdef Dobot_Class < handle
 
     properties (Constant)
 %% Declaring guesses for joint positions 
-elbow_Pos_Place = [0 0.9774 1.4765 0 0] % elbow guess for rest position      
-elbow_Pos_RHS = [-pi/2 pi/3 pi/2 0 0]; %picking up ingredients on RHS
+elbow_Pos_Place = [0 pi/3 pi/2 0 0] % elbow guess for rest position      
+elbow_Pos_RHS = [-pi/2 pi/3 pi/2 0 -pi/6]; %picking up ingredients on RHS
 elbow_Pos_LHS = [pi/2 pi/3 pi/2 0 0]; %placing up ingredients on LHS
 %% Declaring gripper positions 
 Grip_open = deg2rad([25 0]);
@@ -28,19 +28,19 @@ Lettuce_pos_pick = [-0.25,-0.3,0.61];
 Topbun_pos_pick = [-0.25,-0.15,0.61];
 
 %% Declaring positions for placing burger parts 
-Bottombun_pos_place = [0,0.1,0.63];
-Cheese_pos_place = [0,0.1,0.64];
-Patty_pos_place = [0,0.1,0.645];
-Tomato_pos_place = [0,0.1,0.66];
-Lettuce_pos_place = [0,0.1,0.675];
-Topbun_pos_place = [0,0.1,0.682];
+Bottombun_pos_place = [0,0.08,0.63];
+Cheese_pos_place = [0,0.08,0.64];
+Patty_pos_place = [0,0.08,0.645];
+Tomato_pos_place = [0,0.08,0.66];
+Lettuce_pos_place = [0,0.08,0.675];
+Topbun_pos_place = [0,0.08,0.682];
 
     end
 
     methods (Static) 
 %% Function to generate a set of q values based on  jtraj - quintic polynomial
         function qtrajec = Create_Trajectory(robot,Position,jointGuess)
-            steps = 150;
+            steps = 100;
             qNow = robot.model.getpos();
             T = transl(Position)*trotx(0)*troty(0)*trotz(0);    
             qMove = wrapToPi(robot.model.ikcon(T,jointGuess));

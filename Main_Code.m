@@ -136,13 +136,11 @@ CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_closed);
 
 %% Move plate with burger back to start 
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.CRX_rest,CRX5_Class.elbow_Pos_Plate_Pick);
-Robot_Base_Class.Delete_Object(Plate); 
 CRX5_Class.Move_Burger(r1, qTraj, crx_finger1,crx_finger2,CRX5_Class.Plate_pos_place,Dobot_Class.Bottombun_pos_place, ...
     Dobot_Class.Cheese_pos_place,Dobot_Class.Patty_pos_place,Dobot_Class.Tomato_pos_place,Dobot_Class.Lettuce_pos_place,Dobot_Class.Topbun_pos_place);
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos_pick,CRX5_Class.elbow_Pos_Plate_Pick);
 CRX5_Class.Move_Burger(r1, qTraj, crx_finger1,crx_finger2,CRX5_Class.Plate_pos_place,Dobot_Class.Bottombun_pos_place, ...
     Dobot_Class.Cheese_pos_place,Dobot_Class.Patty_pos_place,Dobot_Class.Tomato_pos_place,Dobot_Class.Lettuce_pos_place,Dobot_Class.Topbun_pos_place);
-
 CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_open);
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.CRX_rest,CRX5_Class.elbow_Pos_Rest);
 CRX5_Class.Move_crx(r1,qTraj,crx_finger1,crx_finger2);
