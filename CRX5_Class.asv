@@ -193,10 +193,7 @@ function[Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce,Top_Bun] = Move_Burge
             Plate = PlateMesh_h;
             Bottom_Bun = Bottom_Bun_Mesh_h;
             Cheese = Cheese_Mesh_h;
-            Patty = patty_Mesh_h;
-            Tomato = Tomato_Mesh_h;
-            Lettuce = Lettuce_Mesh_h;
-            Top_Bun = TopBun_Mesh_h;
+            
         end
     end
 end

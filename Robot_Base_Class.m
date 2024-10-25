@@ -11,21 +11,21 @@ tomato_pos = [-0.25,-0.42,0.55];
 lettuce_pos = [-0.25,-0.3,0.56];
 Topbun_pos = [-0.25,-0.15,0.55];
 
-%% Declaring positions for grabbing burger parts 
-Bottombun_pos_pick = [0.25,-0.42,0.65];
-Cheese_pos_pick = [0.25,-0.3,0.65];
-Patty_pos_pick = [0.25,-0.15,0.65];
-tomato_pos_pick = [-0.25,-0.42,0.65];
-lettuce_pos_pick = [-0.25,-0.3,0.66];
-Topbun_pos_pick = [-0.25,-0.15,0.65];
-
-%% Declaring positions for placing burger parts 
-Bottombun_pos_place = [0,0.1,0.65];
-Cheese_pos_place = [0,0.1,0.67];
-Patty_pos_place = [0,0.1,0.68];
-tomato_pos_place = [0,0.1,0.70];
-lettuce_pos_place = [0,0.1,0.71];
-Topbun_pos_place = [0,0.1,0.72];
+% %% Declaring positions for grabbing burger parts 
+% Bottombun_pos_pick = [0.25,-0.42,0.65];
+% Cheese_pos_pick = [0.25,-0.3,0.65];
+% Patty_pos_pick = [0.25,-0.15,0.65];
+% tomato_pos_pick = [-0.25,-0.42,0.65];
+% lettuce_pos_pick = [-0.25,-0.3,0.66];
+% Topbun_pos_pick = [-0.25,-0.15,0.65];
+% 
+% %% Declaring positions for placing burger parts 
+% Bottombun_pos_place = [0,0.1,0.65];
+% Cheese_pos_place = [0,0.1,0.67];
+% Patty_pos_place = [0,0.1,0.68];
+% tomato_pos_place = [0,0.1,0.70];
+% lettuce_pos_place = [0,0.1,0.71];
+% Topbun_pos_place = [0,0.1,0.72];
 
     end
 
@@ -133,6 +133,29 @@ Topbun_pos_place = [0,0.1,0.72];
             catch ME
             end
         end
- 
+        %% function to delete each brick safely through a catch function 
+        function  Delete_burger(Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce, Top_Bun)
+            try delete(Plate);
+            catch ME
+            end
+            try delete(Bottom_Bun);
+            catch ME
+            end
+            try delete(Cheese);
+            catch ME
+            end
+            try delete(Patty);
+            catch ME
+            end
+            try delete(Tomato);
+            catch ME
+            end
+            try delete(Lettuce);
+            catch ME
+            end
+            try delete(Top_Bun);
+            catch ME
+            end
+        end
     end
 end
