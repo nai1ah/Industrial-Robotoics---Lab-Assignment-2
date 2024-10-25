@@ -23,9 +23,9 @@ Topbun_pos = [-0.25,-0.15,0.55];
 %% Declaring positions for grabbing burger parts 
 Dobot_Rest = [0.25,-0.3,0.8];
 % RHS 
-Bottombun_pos_pick = [0.25,-0.42,0.61];
-Cheese_pos_pick = [0.25,-0.3,0.6];
-Patty_pos_pick = [0.25,-0.15,0.61];
+Bottombun_pos_pick = [0.2,-0.42,0.61];
+Cheese_pos_pick = [0.2,-0.3,0.6];
+Patty_pos_pick = [0.2,-0.15,0.61];
 % LHS
 Tomato_pos_pick = [-0.25,-0.42,0.61];
 Lettuce_pos_pick = [-0.25,-0.3,0.61];
