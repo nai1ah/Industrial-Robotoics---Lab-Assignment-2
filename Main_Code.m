@@ -76,12 +76,12 @@ qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.CRX_rest,CRX5_Class.elbow_Pos
 CRX5_Class.Move_crx(r1,qTraj,crx_finger1,crx_finger2);
 
 %% Place bottom bun on plate 
-qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Bottombun_pos_pick,Dobot_Class.elbow_Pos_RHS);
+qTraj = CRX5_Class.Create_Trajectory(r2,Dobot_Class.Bottombun_pos_pick,Dobot_Class.elbow_Pos_RHS);
 Dobot_Class.Move_Dobot(r2,qTraj);
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Bottombun_pos_place,Dobot_Class.elbow_Pos_Place);
 Robot_Base_Class.Delete_Object(Bottom_Bun);
 [Bottom_Bun] = Dobot_Class.Move_Bottom_bun(r2,qTraj,Dobot_Class.Bottombun_pos);
-disp('Press enter to remove plot and continue');
+% disp('Press enter to remove plot and continue');
  % pause;
 %% Place Cheese on bun 
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Cheese_pos_pick,Dobot_Class.elbow_Pos_RHS);
@@ -89,7 +89,7 @@ Dobot_Class.Move_Dobot(r2,qTraj);
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Cheese_pos_place,Dobot_Class.elbow_Pos_Place);
 Robot_Base_Class.Delete_Object(Cheese);
 [Cheese] = Dobot_Class.Move_Cheese(r2,qTraj,Dobot_Class.Cheese_pos);
-disp('Press enter to remove plot and continue');
+% disp('Press enter to remove plot and continue');
  % pause;
 %% Place patty on bun 
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Patty_pos_pick,Dobot_Class.elbow_Pos_RHS);
@@ -105,7 +105,7 @@ Dobot_Class.Move_Dobot(r2,qTraj);
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Tomato_pos_place,Dobot_Class.elbow_Pos_Place);
 Robot_Base_Class.Delete_Object(Tomato);
 [Tomato] = Dobot_Class.Move_Tomato(r2,qTraj,Dobot_Class.Tomato_pos);
-disp('Press enter to remove plot and continue');
+% disp('Press enter to remove plot and continue');
  % pause;
 %% Place lettuce on bun 
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Lettuce_pos_pick,Dobot_Class.elbow_Pos_LHS);
@@ -113,7 +113,7 @@ Dobot_Class.Move_Dobot(r2,qTraj);
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Lettuce_pos_place,Dobot_Class.elbow_Pos_Place);
 Robot_Base_Class.Delete_Object(Lettuce);
 [Lettuce] = Dobot_Class.Move_Lettuce(r2,qTraj,Dobot_Class.Lettuce_pos);
-disp('Press enter to remove plot and continue');
+% disp('Press enter to remove plot and continue');
  % pause;
 
 %% Place top bun on burger
@@ -122,7 +122,7 @@ Dobot_Class.Move_Dobot(r2,qTraj);
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Topbun_pos_place,Dobot_Class.elbow_Pos_Place);
 Robot_Base_Class.Delete_Object(Top_Bun);
 [Top_Bun] = Dobot_Class.Move_Top_Bun(r2,qTraj,Dobot_Class.Topbun_pos);
-disp('Press enter to remove plot and continue');
+% disp('Press enter to remove plot and continue');
  % pause;
 
 %% Move the dobot out of the way 

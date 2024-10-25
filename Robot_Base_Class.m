@@ -5,29 +5,14 @@ classdef Robot_Base_Class < handle
 Plate_pos = [0,1.4,0.55];
 Plate_pos_build = [0,0.1,0.55];
 % RHS
-Bottombun_pos = [0.2,-0.42,0.55];
-Cheese_pos = [0.2,-0.3,0.55];
-Patty_pos = [0.2,-0.15,0.55];
+Bottombun_pos = [0.3,-0.42,0.55];
+Cheese_pos = [0.3,-0.3,0.55];
+Patty_pos = [0.3,-0.15,0.55];
 % LHS
 Tomato_pos = [-0.25,-0.42,0.55];
 Lettuce_pos = [-0.25,-0.3,0.56];
 Topbun_pos = [-0.25,-0.15,0.55];
 
-% %% Declaring positions for grabbing burger parts 
-% Bottombun_pos_pick = [0.25,-0.42,0.65];
-% Cheese_pos_pick = [0.25,-0.3,0.65];
-% Patty_pos_pick = [0.25,-0.15,0.65];
-% tomato_pos_pick = [-0.25,-0.42,0.65];
-% lettuce_pos_pick = [-0.25,-0.3,0.66];
-% Topbun_pos_pick = [-0.25,-0.15,0.65];
-% 
-% %% Declaring positions for placing burger parts 
-% Bottombun_pos_place = [0,0.1,0.65];
-% Cheese_pos_place = [0,0.1,0.67];
-% Patty_pos_place = [0,0.1,0.68];
-% tomato_pos_place = [0,0.1,0.70];
-% lettuce_pos_place = [0,0.1,0.71];
-% Topbun_pos_place = [0,0.1,0.72];
 
     end
 
