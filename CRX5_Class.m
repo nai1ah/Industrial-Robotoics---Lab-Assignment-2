@@ -228,7 +228,7 @@ function qMatrix = collisionAvoidance(robot, qStart, qEnd, face, vertex, faceNor
                 % No collision, proceed with movement
                 qMatrix = [qMatrix; qMatrixStart]; %#ok<AGROW>
                 isCollision = false;
-                checkedWaypoint = i + 1
+                checkedWaypoint = i + 1;
                 
                 % Try joining to the final goal
                 qMatrixStart = CRX5_Class.InterpolateWaypointRadians([qMatrix(end,:); qEnd], deg2rad(10));
