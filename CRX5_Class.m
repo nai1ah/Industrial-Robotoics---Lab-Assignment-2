@@ -23,12 +23,22 @@ CRX_rest = [0, 0.4,0.7];
 
     methods (Static) 
 %% Function to generate a set of q values based on  jtraj - quintic polynomial
-        function qtrajec = Create_Trajectory(robot,Position,jointGuess)
-            steps = 100;
+        function qtrajec = Create_Trajectory(robot, Position, jointGuess, face, vertex, faceNormals)
+            % if no obstacle, continue
+            if nargin < 5
+                steps = 100;
+                qNow = robot.model.getpos();
+                T = transl(Position)*trotx(pi)*troty(0)*trotz(pi/2);    
+                qMove = wrapToPi(robot.model.ikcon(T,jointGuess));
+                qtrajec = jtraj(qNow,qMove,steps);
+                return;
+            end            
             qNow = robot.model.getpos();
-            T = transl(Position)*trotx(pi)*troty(0)*trotz(pi/2);    
-            qMove = wrapToPi(robot.model.ikcon(T,jointGuess));
-            qtrajec = jtraj(qNow,qMove,steps);
+            T = transl(Position) * trotx(pi) * troty(0) * trotz(pi/2);
+            qEnd = wrapToPi(robot.model.ikcon(T, jointGuess)); 
+            
+            % Generate collision-free trajectory
+            qtrajec = CRX5_Class.collisionAvoidance(robot,qNow, qEnd, face, vertex, faceNormals);
         end
         %% Function to move arm and gripper to passed trajectory
         function  Move_crx(r,qtrajec,finger1,finger2)
@@ -197,6 +207,183 @@ function[Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce,Top_Bun] = Move_Burge
             Tomato = Tomato_Mesh_h;
             Lettuce = Lettuce_Mesh_h;
             Top_Bun = TopBun_Mesh_h;
+        end
+        %% Collision Avoidance
+function qMatrix = collisionAvoidance(robot, qStart, qEnd, face, vertex, faceNormals)
+    qWaypoints = [qStart; qEnd]; 
+    isCollision = true; 
+    checkedWaypoint = 1;  % Track up to where the path has been checked
+    qMatrix = []; % Initialise q matrix
+    maxAttempts = 100;  % Maximum number of waypoint attempts
+    attemptCount = 0; 
+
+    while (isCollision)
+        startWaypoint = checkedWaypoint;  % Start checking from last successful waypoint
+        for i = startWaypoint:size(qWaypoints, 1) - 1
+            % Interpolate between waypoints
+            qMatrixStart = CRX5_Class.InterpolateWaypointRadians(qWaypoints(i:i+1,:), deg2rad(10));
+            
+            % Check if the interpolated path is collision-free
+            if ~CRX5_Class.IsCollision(robot, qMatrixStart, face, vertex, faceNormals)
+                % No collision, proceed with movement
+                qMatrix = [qMatrix; qMatrixStart]; %#ok<AGROW>
+                isCollision = false;
+                checkedWaypoint = i + 1
+                
+                % Try joining to the final goal
+                qMatrixStart = CRX5_Class.InterpolateWaypointRadians([qMatrix(end,:); qEnd], deg2rad(10));
+                if ~CRX5_Class.IsCollision(robot, qMatrixStart, face, vertex, faceNormals)
+                    qMatrix = [qMatrix; qMatrixStart];
+                    disp('Reached goal without collision.');
+                    isCollision = false;
+                    return;  % Exit as the goal is reached without collision
+                end
+            else
+                % Collision detected, pick a random waypoint that is collision-free
+                disp('Collision detected. Avoiding...');
+                qAvoid = CRX5_Class.getRandomWaypoint(robot);
+                while CRX5_Class.IsCollision(robot,qAvoid,face,vertex,faceNormals)
+                    qAvoid = CRX5_Class.getRandomWaypoint(robot);
+                end
+                attemptCount = attemptCount + 1;  % Increment the attempt counter
+                
+                % If maximum attempts reached, abandon the path planning
+                if attemptCount >= maxAttempts
+                    disp('Abandoning path planning: too many collision attempts.');
+                    qMatrix = [];  % Return an empty qMatrix to signal failure
+                    return;
+                end
+
+                qWaypoints = [qWaypoints(1:i,:); qAvoid; qWaypoints(i+1:end,:)];
+                isCollision = true;
+                break;  % Restart the loop with the new random waypoint
+            end
+        end
+    end
+end
+
+%% Find a random set of waypoints
+function qAvoid = getRandomWaypoint(robot)
+    links = length(robot.model.links);
+    qAvoid = (2 * rand(1, links) - 1) * pi; 
+
+    % Calculate the end-effector pose
+    transforms = CRX5_Class.GetLinkPoses(qAvoid, robot); 
+    endEffectorZ = transforms(3, 4, end); % Z position of the end effector
+
+    % Adjust the joint angles if the end-effector is below the robot base
+    while (endEffectorZ < robot.model.base.t(3))
+        qAvoid = (2 * rand(1, links) - 1) * pi; 
+
+        % Find waypoint above robot base to avoid collision with ground
+        transforms = CRX5_Class.GetLinkPoses(qAvoid, robot); 
+        endEffectorZ = transforms(3, 4, end); % Z position of the end effector
+        if (endEffectorZ > robot.model.base.t(3))
+            return;
+        end
+    end
+end
+
+%% FineInterpolation
+        function qMatrix = FineInterpolation(q1,q2,maxStepRadians)
+            if nargin < 3
+                maxStepRadians = deg2rad(10);
+            end
+                
+            steps = 100;
+            while ~isempty(find(maxStepRadians < abs(diff(jtraj(q1,q2,steps))),1))
+                steps = steps + 1;
+            end
+            qMatrix = jtraj(q1,q2,steps);
+        end
+
+%% InterpolateWaypointRadians
+% Given a set of waypoints, finely intepolate them
+        function qMatrix = InterpolateWaypointRadians(waypointRadians,maxStepRadians)
+            if nargin < 2
+                maxStepRadians = deg2rad(1);
+            end
+            
+            qMatrix = [];
+            for i = 1: size(waypointRadians,1)-1
+                qMatrix = [qMatrix ; CRX5_Class.FineInterpolation(waypointRadians(i,:),waypointRadians(i+1,:),maxStepRadians)]; %#ok<AGROW>
+            end
+        end
+%% Check if there is collision
+        function result = IsCollision(robot,qMatrix,faces,vertex,faceNormals,returnOnceFound)
+            if nargin < 6
+                returnOnceFound = true;
+            end
+            result = false;
+            
+            for qIndex = 1:size(qMatrix,1)
+                % Get the transform of every joint (i.e. start and end of every link)
+                tr = CRX5_Class.GetLinkPoses(qMatrix(qIndex,:), robot);
+            
+                % Go through each link and also each triangle face
+                for i = 1 : size(tr,3)-1    
+                    for faceIndex = 1:size(faces,1)
+                        vertOnPlane = vertex(faces(faceIndex,1)',:);
+                        [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
+                        if check == 1 && CRX5_Class.IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
+                            plot3(intersectP(1),intersectP(2),intersectP(3),'g*');
+                            disp('Intersection');
+                            result = true;
+                            if returnOnceFound
+                                return
+                            end
+                        end
+                    end    
+                end
+            end
+        end
+
+        %% IsIntersectionPointInsideTriangle
+function result = IsIntersectionPointInsideTriangle(intersectP,triangleVerts)
+
+u = triangleVerts(2,:) - triangleVerts(1,:);
+v = triangleVerts(3,:) - triangleVerts(1,:);
+
+uu = dot(u,u);
+uv = dot(u,v);
+vv = dot(v,v);
+
+w = intersectP - triangleVerts(1,:);
+wu = dot(w,u);
+wv = dot(w,v);
+
+D = uv * uv - uu * vv;
+
+% Get and test parametric coords (s and t)
+s = (uv * wv - vv * wu) / D;
+if (s < 0.0 || s > 1.0)        % intersectP is outside Triangle
+    result = 0;
+    return;
+end
+
+t = (uv * wu - uu * wv) / D;
+if (t < 0.0 || (s + t) > 1.0)  % intersectP is outside Triangle
+    result = 0;
+    return;
+end
+
+result = 1;                      % intersectP is in Triangle
+end
+%% Find poses
+        function [ transforms ] = GetLinkPoses( q, robot)
+            links = robot.model.links;
+            transforms = zeros(4, 4, length(links) + 1);
+            transforms(:,:,1) = robot.model.base;
+            
+            for i = 1:length(links)
+                L = links(1,i);
+                
+                current_transform = transforms(:,:, i);
+                
+                current_transform = current_transform * trotz(q(1,i) + L.offset) * ...
+                transl(0,0, L.d) * transl(L.a,0,0) * trotx(L.alpha);
+                transforms(:,:,i + 1) = current_transform;
+            end
         end
     end
 end
