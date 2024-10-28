@@ -21,7 +21,7 @@ classdef EStopUI < handle
         %% Add Robots
         function addRobot(obj, robot)
             % Add a robot to the manager
-            obj.robots = [obj.robots, robot];
+            obj.robots{end+1} = robot;
         end
         %% Create UI
         function createUI(obj)
@@ -50,8 +50,9 @@ classdef EStopUI < handle
                 obj.checkButtons();
                 % Loop through robots to freeze
                 for i = 1:length(obj.robots)
-                    qStop = obj.robots(i).model.getpos();
-                    obj.robots(i).model.animate(qStop);
+                    robot = obj.robots{i};  % Access the robot using curly braces
+                    qStop = robot.model.getpos();  % Call getpos method on the model
+                    robot.model.animate(qStop);     % Animate the robot's model
                 end
             end
         end
