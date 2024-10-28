@@ -7,6 +7,7 @@ clc;
 Robot_Base_Class.Plot_Environment();
 axis manual;
 [Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce, Top_Bun] = Robot_Base_Class.Deconstructed_Burger();
+lightCurtain = Robot_Base_Class.createLightCurtain(-0.5:0.1:0.5, 2.5, -0.1:0.1:1.5);
 hold on
 
 %% Pin definitions
@@ -18,10 +19,6 @@ buttonResumePin = 'D3'; % Resume button pin
 % configurePin(a, buttonStopPin, 'Pullup');
 % configurePin(a, buttonResumePin, 'Pullup');
 
-%% Create E-Stop Object
-% eStop = EStopUI(a, buttonStopPin, buttonResumePin);
-% eStop.createUI();
-% to add robots to the eStop, use eStop.addRobot()
 %% Plot the CRX5 and the gripper
 r1 = crx5;
 r1.model.base.t = [-0.35,0.75,0.55]; % moving the base of the robot  
@@ -53,6 +50,18 @@ base_2 = r2.model.fkineUTS(q_2_Now);
 % dobot_finger1 = LinearFinger(base_2*trotx(pi/2)); 
 % dobot_finger2 = LinearFinger(base_2*troty(pi)*trotx(-pi/2));
 
+%% Jogging Control
+%r1Jog = RobotJogGUI(r1);
+%r2Jog = RobotJogGUI(r2);
+
+%% Create E-Stop Object
+%eStop = EStopUI(a, buttonStopPin, buttonResumePin);
+%eStop.createUI();
+%eStop.addRobot(r1);
+%eStop.addRobot(r2);
+
+%[vertex, face, faceNormals] = Robot_Base_Class.RectangularPrism([0.1, 0.1, 0], [0.5, 0.5, 1.7]);
+
 %% Move the dobot out of the way 
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Dobot_Rest,Dobot_Class.elbow_Pos_RHS);
 Dobot_Class.Move_Dobot(r2,qTraj);
@@ -61,37 +70,45 @@ r2.model.fkineUTS(qnow)
 disp('Press enter to remove plot and continue');
  pause;
 %% Move CRX to plate 
+%eStop.checkButtons();
 CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_open);
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos_pick,CRX5_Class.elbow_Pos_Plate_Pick);
 CRX5_Class.Move_crx(r1,qTraj,crx_finger1,crx_finger2);
 CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_closed);
 
 %% Move plate to dobot 
+%eStop.checkButtons();
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos_place,CRX5_Class.elbow_Pos_plate_Place);
 Robot_Base_Class.Delete_Object(Plate);
 [Plate] = CRX5_Class.Move_Plate(r1, qTraj, crx_finger1,crx_finger2,CRX5_Class.Plate_pos);
 %% Move crx to rest position
+%eStop.checkButtons();
 CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_open);
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.CRX_rest,CRX5_Class.elbow_Pos_Rest);
 CRX5_Class.Move_crx(r1,qTraj,crx_finger1,crx_finger2);
 
 %% Place bottom bun on plate 
+%eStop.checkButtons();
 qTraj = CRX5_Class.Create_Trajectory(r2,Dobot_Class.Bottombun_pos_pick,Dobot_Class.elbow_Pos_RHS);
 Dobot_Class.Move_Dobot(r2,qTraj);
+%eStop.checkButtons();
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Bottombun_pos_place,Dobot_Class.elbow_Pos_Place);
 Robot_Base_Class.Delete_Object(Bottom_Bun);
 [Bottom_Bun] = Dobot_Class.Move_Bottom_bun(r2,qTraj,Dobot_Class.Bottombun_pos);
 % disp('Press enter to remove plot and continue');
  % pause;
 %% Place Cheese on bun 
+%eStop.checkButtons();
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Cheese_pos_pick,Dobot_Class.elbow_Pos_RHS);
 Dobot_Class.Move_Dobot(r2,qTraj);
+%eStop.checkButtons();
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Cheese_pos_place,Dobot_Class.elbow_Pos_Place);
 Robot_Base_Class.Delete_Object(Cheese);
 [Cheese] = Dobot_Class.Move_Cheese(r2,qTraj,Dobot_Class.Cheese_pos);
 % disp('Press enter to remove plot and continue');
  % pause;
 %% Place patty on bun 
+%eStop.checkButtons();
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Patty_pos_pick,Dobot_Class.elbow_Pos_RHS);
 Dobot_Class.Move_Dobot(r2,qTraj);
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Patty_pos_place,Dobot_Class.elbow_Pos_Place);
@@ -100,6 +117,7 @@ Robot_Base_Class.Delete_Object(Patty);
 disp('Press enter to remove plot and continue');
  % pause;
 %% Place tomato on bun 
+%eStop.checkButtons();
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Tomato_pos_pick,Dobot_Class.elbow_Pos_LHS);
 Dobot_Class.Move_Dobot(r2,qTraj);
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Tomato_pos_place,Dobot_Class.elbow_Pos_Place);
@@ -108,6 +126,7 @@ Robot_Base_Class.Delete_Object(Tomato);
 % disp('Press enter to remove plot and continue');
  % pause;
 %% Place lettuce on bun 
+%eStop.checkButtons();
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Lettuce_pos_pick,Dobot_Class.elbow_Pos_LHS);
 Dobot_Class.Move_Dobot(r2,qTraj);
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Lettuce_pos_place,Dobot_Class.elbow_Pos_Place);
@@ -117,6 +136,7 @@ Robot_Base_Class.Delete_Object(Lettuce);
  % pause;
 
 %% Place top bun on burger
+%eStop.checkButtons();
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Topbun_pos_pick,Dobot_Class.elbow_Pos_LHS);
 Dobot_Class.Move_Dobot(r2,qTraj);
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Topbun_pos_place,Dobot_Class.elbow_Pos_Place);
@@ -126,15 +146,18 @@ Robot_Base_Class.Delete_Object(Top_Bun);
  % pause;
 
 %% Move the dobot out of the way 
+%eStop.checkButtons();
 qTraj = Dobot_Class.Create_Trajectory(r2,Dobot_Class.Dobot_Rest,Dobot_Class.elbow_Pos_RHS);
 Dobot_Class.Move_Dobot(r2,qTraj);
 
 %% Move crx back to plate 
+%eStop.checkButtons();
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.Plate_pos_place,CRX5_Class.elbow_Pos_plate_Place);
 CRX5_Class.Move_crx(r1, qTraj, crx_finger1,crx_finger2);
 CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_closed);
 
 %% Move plate with burger back to start 
+%eStop.checkButtons();
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.CRX_rest,CRX5_Class.elbow_Pos_Plate_Pick);
 Robot_Base_Class.Delete_burger(Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce, Top_Bun);
 [Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce, Top_Bun] = CRX5_Class.Move_Burger(r1, qTraj, crx_finger1,crx_finger2,CRX5_Class.Plate_pos_place,Dobot_Class.Bottombun_pos_place, ...
@@ -144,5 +167,6 @@ Robot_Base_Class.Delete_burger(Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce
 [Plate, Bottom_Bun, Cheese, Patty, Tomato, Lettuce, Top_Bun] = CRX5_Class.Move_Burger(r1, qTraj, crx_finger1,crx_finger2,CRX5_Class.Plate_pos_place,Dobot_Class.Bottombun_pos_place, ...
     Dobot_Class.Cheese_pos_place,Dobot_Class.Patty_pos_place,Dobot_Class.Tomato_pos_place,Dobot_Class.Lettuce_pos_place,Dobot_Class.Topbun_pos_place);
 CRX5_Class.Move_Gripper(r1,crx_finger1,crx_finger2,CRX5_Class.Grip_open);
+%eStop.checkButtons();
 qTraj = CRX5_Class.Create_Trajectory(r1,CRX5_Class.CRX_rest,CRX5_Class.elbow_Pos_Rest);
 CRX5_Class.Move_crx(r1,qTraj,crx_finger1,crx_finger2);
