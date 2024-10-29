@@ -34,7 +34,6 @@ crx_finger1 = LinearFinger(base_1*trotx(pi/2));
 crx_finger2 = LinearFinger(base_1*troty(pi)*trotx(-pi/2));
 
 %% Plot the dobot magician and the gripper
-% Call the LinearUR3e
 r2 = DobotMagician;
 r2.model.base = trotz(pi/2);
 r2.model.base.t = [0,-0.25,0.55];
